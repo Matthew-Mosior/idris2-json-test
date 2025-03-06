@@ -48,8 +48,8 @@ aggregateLoop res (x::xs) t =
       aggregateLoop res xs t
 
 aggregate : String -> Ref World Res -> F1' World
-aggregate cs res t =
-  case parseJSON Virtual cs of
+aggregate fn res t =
+  case parseJSON (FileSrc fn) fn of
     Left  err           =>
       ioToF1 (die $ "Could not parse input: " ++ show err) t
     Right (JObject cs') =>
@@ -92,11 +92,12 @@ notify msg = do
 
 main1 : F1' World
 main1 t =
-  let Right src    # t := ioToF1 (readFile "/tmp/1.json") t
-        | Left err # t => ioToF1 (die $ "Error reading file: " ++ show err) t
+  let --Right src    # t := ioToF1 (readFile "/tmp/1.json") t
+      --  | Left err # t => ioToF1 (die $ "Error reading file: " ++ show err) t
       pid          # t := ioToF1 getPID t
       _            # t := ioToF1 (notify $ "Idris \t" ++ show pid) t
-      results      # t := calc src t
+      --results      # t := calc src t
+      results      # t := calc "/tmp/1.json" t
       _            # t := ioToF1 (notify "stop") t
     in ioToF1 (print $ show results) t
 
