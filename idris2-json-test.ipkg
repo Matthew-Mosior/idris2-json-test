@@ -13,8 +13,10 @@ authors = "Matthew-Mosior"
 -- langversion
 
 -- packages to add to search path
-depends = json
+depends = elab-util
         , network
+        , parser-json
+        , ref1
 
 -- modules to install
 -- modules =
