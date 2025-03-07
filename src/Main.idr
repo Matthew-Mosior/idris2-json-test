@@ -39,7 +39,22 @@ aggregateLoop res (x::xs) t =
   case x of
     JObject x' =>
       case x' of
-        ((_, (JDouble xval)) :: (_, (JDouble yval)) :: (_, (JDouble zval)) :: _) =>
+        (("x", (JDouble xval)) :: ("y", (JDouble yval)) :: ("z", (JDouble zval)) :: _) =>
+          let _ # t := op res (MkCoordinate xval yval zval) t
+            in aggregateLoop res xs t
+        (("x", (JDouble xval)) :: ("z", (JDouble zval)) :: ("y", (JDouble yval)) :: _) =>
+          let _ # t := op res (MkCoordinate xval yval zval) t
+            in aggregateLoop res xs t
+        (("y", (JDouble yval)) :: ("x", (JDouble xval)) :: ("z", (JDouble zval)) :: _) =>
+          let _ # t := op res (MkCoordinate xval yval zval) t
+            in aggregateLoop res xs t
+        (("y", (JDouble yval)) :: ("z", (JDouble zval)) :: ("x", (JDouble xval)) :: _) =>
+          let _ # t := op res (MkCoordinate xval yval zval) t
+            in aggregateLoop res xs t
+        (("z", (JDouble zval)) :: ("x", (JDouble xval)) :: ("y", (JDouble yval)) :: _) =>
+          let _ # t := op res (MkCoordinate xval yval zval) t
+            in aggregateLoop res xs t
+        (("z", (JDouble zval)) :: ("y", (JDouble yval)) :: ("x", (JDouble xval)) :: _) =>
           let _ # t := op res (MkCoordinate xval yval zval) t
             in aggregateLoop res xs t
         _                                                                        =>
