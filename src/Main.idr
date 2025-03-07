@@ -69,9 +69,9 @@ resf : Ref s Res -> F1 s Coordinate
 resf res t =
   let (MkRes xsum ysum zsum count) # t := read1 res t
       c                                := the Double (cast count)
-    in MkCoordinate (floor xsum / c)
-                    (floor ysum / c)
-                    (floor zsum / c) # t
+    in MkCoordinate (xsum / c)
+                    (ysum / c)
+                    (zsum / c) # t
 
 calc : String -> F1 World Coordinate
 calc cs t =
