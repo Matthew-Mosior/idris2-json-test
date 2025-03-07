@@ -80,6 +80,15 @@ calc cs t =
       coord # t := resf res t
     in coord # t
 
+verify : (Coordinate, String) -> IO ()
+verify (right, v) = do
+  left <- runIO (calc v)
+  case left /= right of
+    True  =>
+      die $ show left ++ " != " ++ show right
+    False =>
+      pure () 
+
 partial
 notify : String -> IO ()
 notify msg = do
@@ -92,12 +101,20 @@ notify msg = do
 
 main1 : F1' World
 main1 t =
-  let Right src    # t := ioToF1 (readFile "/tmp/1.json") t
-        | Left err # t => ioToF1 (die $ "Error reading file: " ++ show err) t
-      pid          # t := ioToF1 getPID t
-      _            # t := ioToF1 (notify $ "Idris: PID " ++ show pid) t
-      results      # t := calc src t
-      _            # t := ioToF1 (notify "stop") t
+  let verificationpairs      : List (Coordinate, String)
+      verificationpairs      = map (\x => (MkCoordinate 2.0 0.5 0.25, x)
+                                   ) [ "{\"coordinates\":[{\"x\":2.0,\"y\":0.5,\"z\":0.25}]}"
+                                     , "{\"coordinates\":[{\"y\":0.5,\"x\":2.0,\"z\":0.25}]}"
+                                     ]
+      _                 # t := ioToF1 (for_ verificationpairs $ \verificationpair =>
+                                         verify verificationpair  
+                                      ) t
+      Right src         # t := ioToF1 (readFile "/tmp/1.json") t
+        | Left err      # t => ioToF1 (die $ "Error reading file: " ++ show err) t
+      pid               # t := ioToF1 getPID t
+      _                 # t := ioToF1 (notify $ "Idris: PID " ++ show pid) t
+      results           # t := calc src t
+      _                 # t := ioToF1 (notify "stop") t
     in ioToF1 (print $ show results) t
 
 main : IO ()
