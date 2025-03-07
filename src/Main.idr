@@ -68,10 +68,10 @@ aggregate src res t =
 resf : Ref s Res -> F1 s Coordinate
 resf res t =
   let (MkRes xsum ysum zsum count) # t := read1 res t
-      c                                := cast count
-    in MkCoordinate (floor $ xsum / c)
-                    (floor $ ysum / c)
-                    (floor $ zsum / c) # t
+      c                                := the Double (cast count)
+    in MkCoordinate (floor xsum / c)
+                    (floor ysum / c)
+                    (floor zsum / c) # t
 
 calc : String -> F1 World Coordinate
 calc cs t =
@@ -95,7 +95,7 @@ main1 t =
   let Right src    # t := ioToF1 (readFile "/tmp/1.json") t
         | Left err # t => ioToF1 (die $ "Error reading file: " ++ show err) t
       pid          # t := ioToF1 getPID t
-      _            # t := ioToF1 (notify $ "Idris \t" ++ show pid) t
+      _            # t := ioToF1 (notify $ "Idris: PID " ++ show pid) t
       results      # t := calc src t
       _            # t := ioToF1 (notify "stop") t
     in ioToF1 (print $ show results) t
